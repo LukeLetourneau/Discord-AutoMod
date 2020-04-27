@@ -1,12 +1,16 @@
 import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.internal.requests.Route
 import java.io.File
+import java.time.Duration
 import java.util.*
 
 fun main() {
@@ -33,12 +37,19 @@ class MessageListener: ListenerAdapter() {
             val username = event.member?.user?.name
             val message = event.message.contentDisplay
             println("[$server][$channel] $username: $message")
-            if(isCommand(message)) {
-                val command = Command(message)
-                handleCommand(command)
+            event.message.mentionedMembers
+            if(isCommand(message) &&
+                (event.member?.roles?.any { it.name == "MOD" } == true
+                        || event.member?.hasPermission(Permission.ADMINISTRATOR) == true)) {
+                handleCommand(Command(message, event))
             } else {
-                if (message.toLowerCase() == "ping") {
-                    event.textChannel.sendMessage("Pong!").queue()
+                if (message.toLowerCase() == "ping" || message.toLowerCase() == "ping!") {
+                    event.textChannel.sendMessage(
+                        "Pong! [took ${Duration.between(
+                            event.message.timeCreated.toInstant(), 
+                            java.time.Instant.now()
+                        ).toMillis()}ms]").queue()
+
                 } else if (messageContainsNoNoWord(message)) {
                     event.message.delete().queue()
                 }
@@ -67,13 +78,19 @@ class ReadyListener : EventListener {
 fun isCommand(message: String) = message.startsWith(commandPrefix)
 
 fun handleCommand(command: Command) {
-    println(command)
     when(command.command) {
         "register" -> {
             command.params.forEach {
                 File("nonowords.txt").appendText("$it\n")
             }
             updateNonoWords()
+        }
+        "warn" -> {
+            if(command.event.message.mentionedMembers.size == 1) {
+                command.event.message.textChannel.sendMessage(
+                    "Consider yourself warned, ${command.event.message.mentionedMembers[0].effectiveName}"
+                ).queue()
+            }
         }
     }
 }
@@ -111,10 +128,13 @@ fun updateNonoWords() {
     s.close()
 }
 
-class Command(val command: String, val params: List<String>) {
-    constructor (message: String) : this(
+fun nsToS(ns: Long) = ns / 1000000000
+
+class Command(val command: String, val params: List<String>, val event: MessageReceivedEvent) {
+    constructor (message: String, event: MessageReceivedEvent) : this(
         message.removePrefix(commandPrefix).split(" ").first(),
-        message.split(" ").drop(1)
+        message.split(" ").drop(1),
+        event
     )
 
     override fun toString(): String {

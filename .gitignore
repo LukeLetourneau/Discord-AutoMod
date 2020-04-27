@@ -1,5 +1,4 @@
-/src/main/resources/nonowords.txt
-/src/main/resources/token
+/src/main/resources/
 /build/
 /gradle/
 /gradle.properties
