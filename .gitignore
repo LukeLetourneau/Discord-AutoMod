@@ -1,0 +1,9 @@
+/src/main/resources/nonowords.txt
+/src/main/resources/token
+/build/
+/gradle/
+/gradle.properties
+/gradlew
+/gradlew.bat
+/.gradle/
+/.idea/
