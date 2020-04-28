@@ -17,9 +17,12 @@ val nonoWords = mutableListOf<String>()
 const val commandPrefix = "!"
 var commandHandler: CommandHandler? = null
 
+const val BAD_WORDS_FILE = "nonowords"
+const val TOKEN_FILE = "token"
+
 class Bot {
     init {
-        val jda = JDABuilder.createDefault(File("token").readText()).build()
+        val jda = JDABuilder.createDefault(File(TOKEN_FILE).readText()).build()
         commandHandler = CommandHandler(SecurityLevel.DEFAULT)
         jda.addEventListener(MessageListener())
         jda.addEventListener(ReadyListener())
@@ -35,9 +38,8 @@ class MessageListener: ListenerAdapter() {
             val username = event.member?.user?.name
             val message = event.message.contentDisplay
             println("[$server][$channel] $username: $message")
-            event.message.mentionedMembers
             if(!event.author.isBot) {
-                if (isCommand(message) || message.toLowerCase() == "ping" || message.toLowerCase() == "ping!") {
+                if (isCommand(message)) {
                     commandHandler?.handleCommand(Command(message, event))
                 } else {
                     if (messageContainsNoNoWord(message)) {
@@ -66,30 +68,14 @@ class ReadyListener : EventListener {
     }
 }
 
-fun isCommand(message: String) = message.startsWith(commandPrefix)
+fun isCommand(message: String) = message.startsWith(commandPrefix) ||
+              message.toLowerCase() == "ping" ||
+              message.toLowerCase() == "ping!"
 
-fun messageContainsNoNoWord(message: String): Boolean {
-    // Remove whitespace and convert 1337
-    val newMessage = StringBuilder()
-    for(c in message) {
-        when(c) {
-            '0' -> newMessage.append('o')
-            '1' -> newMessage.append('i')
-            '3' -> newMessage.append('e')
-            '5' -> newMessage.append('s')
-            '6' -> newMessage.append('b')
-            '7' -> newMessage.append('t')
-            else -> {
-                if(!Character.isWhitespace(c))
-                    newMessage.append(c)
-            }
-        }
-    }
-    return nonoWords.any { newMessage.toString().toLowerCase().contains(it) }
-}
+fun messageContainsNoNoWord(message: String) = nonoWords.any { fullTranslate(message).toLowerCase().contains(it) }
 
 fun updateNonoWords() {
-    val s = Scanner(File("fortnite\nf○rtnite\nfortntie\nforkknife\n4tnite\nfort_n_ite\nfortnit_e_\nfortnіte\n4ortnite"))
+    val s = Scanner(File(BAD_WORDS_FILE))
     do {
         with(s.nextLine()) {
             if(!nonoWords.contains(this)) {
