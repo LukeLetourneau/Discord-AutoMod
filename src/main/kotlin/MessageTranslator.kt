@@ -1,5 +1,17 @@
 // TODO WIP
 
+val leetTable = mapOf(
+    '0' to 'o',
+    '1' to 'i',
+    '3' to 'e',
+    '5' to 's',
+    '6' to 'b',
+    '7' to 't',
+    '9' to 'g'
+)
+
+// val letterAliasTable = mapOf()
+
 fun fullTranslate(message: String) =
     convertLeet(
         convertUnicode(
@@ -8,7 +20,9 @@ fun fullTranslate(message: String) =
     )
 
 fun convertLeet(message: String): String {
-    return message
+    var nm = message;
+    leetTable.forEach { nm = message.replace(it.key, it.value) }
+    return nm
 }
 
 fun convertUnicode(message: String): String {

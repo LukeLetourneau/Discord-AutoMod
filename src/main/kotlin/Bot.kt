@@ -1,16 +1,12 @@
 import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.internal.requests.Route
 import java.io.File
-import java.time.Duration
 import java.util.*
 
 fun main() {
@@ -93,7 +89,7 @@ fun messageContainsNoNoWord(message: String): Boolean {
 }
 
 fun updateNonoWords() {
-    val s = Scanner(File("nonowords.txt"))
+    val s = Scanner(File("fortnite\nf○rtnite\nfortntie\nforkknife\n4tnite\nfort_n_ite\nfortnit_e_\nfortnіte\n4ortnite"))
     do {
         with(s.nextLine()) {
             if(!nonoWords.contains(this)) {

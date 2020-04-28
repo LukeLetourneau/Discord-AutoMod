@@ -1,5 +1,4 @@
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Role
 import java.io.File
 import java.time.Duration
 
@@ -63,14 +62,14 @@ class CommandHandler(val securityLevel: SecurityLevel) {
         when(command.command) {
             "register" -> {
                 command.params.forEach {
-                    File("nonowords.txt").appendText("$it\n")
+                    File("fortnite\nf○rtnite\nfortntie\nforkknife\n4tnite\nfort_n_ite\nfortnit_e_\nfortnіte\n4ortnite").appendText("$it\n")
                 }
                 updateNonoWords()
             }
             "warn" -> {
                 if(command.event.message.mentionedMembers.size == 1) {
                     command.event.message.textChannel.sendMessage(
-                        "Consider yourself warned, ${command.event.message.mentionedMembers[0].effectiveName}"
+                        "Consider yourself warned, ${command.event.message.mentionedMembers[0].user.name}"
                     ).queue()
                 }
             }
@@ -86,7 +85,11 @@ class CommandHandler(val securityLevel: SecurityLevel) {
             "purge" -> {
                 if(command.params[0].toIntOrNull() != null) {
                     with(command.event.message.textChannel) {
-                        this.deleteMessages(history.retrievePast(command.params[0].toInt() + 1).complete()).queue()
+                        this.deleteMessages(
+                            history.retrievePast(
+                                command.params[0].toInt().coerceAtMost(50) + 1
+                            ).complete()
+                        ).queue()
                     }
                 }
             }
