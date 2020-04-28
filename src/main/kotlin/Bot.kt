@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.io.File
 import java.util.*
 
-fun main() {
+fun main(args: Array<String>) {
     Bot()
 }
 
@@ -22,7 +22,7 @@ const val TOKEN_FILE = "token"
 
 class Bot {
     init {
-        val jda = JDABuilder.createDefault(File(TOKEN_FILE).readText()).build()
+        val jda = JDABuilder.createDefault(this.javaClass.getResourceAsStream(TOKEN_FILE).reader().readText()).build()
         commandHandler = CommandHandler(SecurityLevel.DEFAULT)
         jda.addEventListener(MessageListener())
         jda.addEventListener(ReadyListener())
@@ -75,14 +75,12 @@ fun isCommand(message: String) = message.startsWith(commandPrefix) ||
 fun messageContainsNoNoWord(message: String) = nonoWords.any { fullTranslate(message).toLowerCase().contains(it) }
 
 fun updateNonoWords() {
-    val s = Scanner(File(BAD_WORDS_FILE))
-    do {
-        with(s.nextLine()) {
-            if(!nonoWords.contains(this)) {
-                nonoWords.add(this)
-            }
+    val s = Bot::javaClass.javaClass.getResourceAsStream(BAD_WORDS_FILE).reader()
+    s.forEachLine {
+        if(!nonoWords.contains(it)) {
+            nonoWords.add(it)
         }
-    } while(s.hasNext())
+    }
     println(nonoWords)
     s.close()
 }

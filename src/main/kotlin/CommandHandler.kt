@@ -1,5 +1,6 @@
 import net.dv8tion.jda.api.entities.Member
 import java.io.File
+import java.io.InputStream
 import java.time.Duration
 
 enum class SecurityLevel { RELAXED, DEFAULT, LOCKDOWN }
@@ -8,8 +9,9 @@ class CommandHandler(val securityLevel: SecurityLevel) {
     private val permissionLevelMap: MutableMap<Int, MutableList<String>> = mutableMapOf()
 
     init {
-        val permFile = File("permissions/" + securityLevel.name)
+        val permFile = this.javaClass.getResourceAsStream("permissions/" + securityLevel.name)
         constructMapFromFile(permFile)
+        permFile.close()
     }
 
     private fun updateCommandList() {
@@ -29,9 +31,9 @@ class CommandHandler(val securityLevel: SecurityLevel) {
         }
     }
 
-    private fun constructMapFromFile(file: File) {
+    private fun constructMapFromFile(file: InputStream) {
         var curLvl = 0;
-        file.forEachLine {
+        file.reader().forEachLine {
             if(it.toIntOrNull() != null) {
                 curLvl = it.toInt()
             } else {

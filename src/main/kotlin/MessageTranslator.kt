@@ -10,7 +10,7 @@ val leetTable = mapOf(
     '9' to 'g'
 )
 
-// val letterAliasTable = mapOf()
+// val characterAliasTable = mapOf()
 
 fun fullTranslate(message: String) =
     convertLeet(
@@ -29,6 +29,4 @@ fun convertUnicode(message: String): String {
     return message
 }
 
-fun removeWhitespace(message: String): String {
-    return message
-}
+fun removeWhitespace(message: String) = message.replace(Regex("\\s"), "")
