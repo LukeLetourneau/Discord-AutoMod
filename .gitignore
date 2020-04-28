@@ -6,4 +6,4 @@
 /.gradle/
 /.idea/
 /src/main/resources/token
-/src/main/resources/nonowords.txt
+/src/main/resources/nonowords
