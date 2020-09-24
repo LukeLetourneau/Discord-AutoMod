@@ -5,7 +5,9 @@ dev
 register
 purge
 warn
+updateLevel
 0
 ping
 ping!
 help
+owo

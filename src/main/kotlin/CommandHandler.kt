@@ -5,7 +5,7 @@ import java.time.Duration
 
 enum class SecurityLevel { RELAXED, DEFAULT, LOCKDOWN }
 
-class CommandHandler(val securityLevel: SecurityLevel) {
+class CommandHandler(var securityLevel: SecurityLevel) {
     private val permissionLevelMap: MutableMap<Int, MutableList<String>> = mutableMapOf()
 
     init {
@@ -17,6 +17,9 @@ class CommandHandler(val securityLevel: SecurityLevel) {
     private fun updateCommandList() {
         val file = File("permissions/" + securityLevel.name)
         var curLvl = 0;
+
+        permissionLevelMap.clear()
+
         file.forEachLine {
             if(it.toIntOrNull() != null) {
                 curLvl = it.toInt()
@@ -111,6 +114,26 @@ class CommandHandler(val securityLevel: SecurityLevel) {
                     permissionLevelMap[i]?.forEach { message += "- $it\n" }
                 }
                 command.event.message.textChannel.sendMessage(message).queue()
+            }
+            "owo" -> {
+                with(command.event.message.textChannel) {
+                    sendMessage(
+                        history.retrievePast(
+                            2
+                        ).complete()[1].contentDisplay
+                            .replace("[rl]".toRegex(), "w")
+                            .replace("[RL]".toRegex(), "W")
+                    ).queue()
+                }
+            }
+            "updateLevel" -> {
+                try {
+                    securityLevel = SecurityLevel.valueOf(command.params[0])
+                    updateCommandList()
+                    command.event.message.textChannel.sendMessage("Security level has been changed to ${command.params[0]}").queue()
+                } catch (e: IllegalArgumentException) {
+                    command.event.message.textChannel.sendMessage("${command.params[0]} is not a valid security level!").queue()
+                }
             }
         }
     }

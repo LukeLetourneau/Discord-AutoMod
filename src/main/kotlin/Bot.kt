@@ -9,28 +9,43 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.io.File
 import java.util.*
 
-fun main(args: Array<String>) {
+fun main() {
     Bot()
 }
 
 val nonoWords = mutableListOf<String>()
 const val commandPrefix = "!"
 var commandHandler: CommandHandler? = null
+val properties = Properties()
 
 const val BAD_WORDS_FILE = "nonowords"
 const val TOKEN_FILE = "token"
+const val CONFIG_FILE = "config.dat"
 
 class Bot {
     init {
         val jda = JDABuilder.createDefault(this.javaClass.getResourceAsStream(TOKEN_FILE).reader().readText()).build()
-        commandHandler = CommandHandler(SecurityLevel.DEFAULT)
-        jda.addEventListener(MessageListener())
-        jda.addEventListener(ReadyListener())
+        jda.addEventListener(EventListener())
         jda.awaitReady()
     }
 }
 
-class MessageListener: ListenerAdapter() {
+class EventListener: ListenerAdapter() {
+
+    override fun onReady(event: ReadyEvent) {
+        var propFile = this.javaClass.getResourceAsStream(CONFIG_FILE)
+
+        //properties.load(propFile)
+
+        if(properties.isEmpty) {
+            initProperties()
+        }
+
+        commandHandler = CommandHandler(SecurityLevel.valueOf(properties["permlvl"].toString()))
+        updateNonoWords()
+        println("Bot Ready to go")
+    }
+
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if(event.isFromType(ChannelType.TEXT)) {
             val server = event.guild.name
@@ -59,15 +74,6 @@ class MessageListener: ListenerAdapter() {
     }
 }
 
-class ReadyListener : EventListener {
-    override fun onEvent(event: GenericEvent) {
-        if(event is ReadyEvent) {
-            updateNonoWords()
-            println("Bot Ready to go")
-        }
-    }
-}
-
 fun isCommand(message: String) = message.startsWith(commandPrefix) ||
               message.toLowerCase() == "ping" ||
               message.toLowerCase() == "ping!"
@@ -83,6 +89,11 @@ fun updateNonoWords() {
     }
     println(nonoWords)
     s.close()
+}
+
+fun initProperties() {
+    properties["permlvl"] = "DEFAULT"
+
 }
 
 class Command(val command: String, val params: List<String>, val event: MessageReceivedEvent) {

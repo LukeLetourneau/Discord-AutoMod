@@ -12,7 +12,7 @@ plugins {
 }
 
 group 'com.ender'
-version '1.0-SNAPSHOT'
+version 'v1.1'
 
 apply plugin: 'application'
 apply plugin: 'kotlin'
@@ -41,6 +41,8 @@ compileTestKotlin {
 }
 
 shadowJar {
+    setArchiveBaseName("AUTO_MOD")
+    setArchiveClassifier("")
     mainClassName = 'BotKt'
 }
 

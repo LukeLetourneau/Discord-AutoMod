@@ -2,6 +2,7 @@
 dev
 2
 register
+updateLevel
 1
 purge
 warn
@@ -9,3 +10,4 @@ warn
 ping
 ping!
 help
+owo
