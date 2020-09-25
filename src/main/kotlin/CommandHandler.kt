@@ -69,7 +69,7 @@ class CommandHandler(var securityLevel: SecurityLevel) {
                 command.params.forEach {
                     File("fortnite\nf○rtnite\nfortntie\nforkknife\n4tnite\nfort_n_ite\nfortnit_e_\nfortnіte\n4ortnite").appendText("$it\n")
                 }
-                updateNonoWords()
+                updateBannedWords()
             }
             "warn" -> {
                 if(command.event.message.mentionedMembers.size == 1) {
@@ -82,7 +82,7 @@ class CommandHandler(var securityLevel: SecurityLevel) {
                 if(command.params.isEmpty()) return
                 when(command.params[0]) {
                     "u" -> when(command.params[1]) {
-                        "nnw" -> updateNonoWords()
+                        "nnw" -> updateBannedWords()
                         "c" -> updateCommandList()
                     }
                 }
@@ -134,6 +134,9 @@ class CommandHandler(var securityLevel: SecurityLevel) {
                 } catch (e: IllegalArgumentException) {
                     command.event.message.textChannel.sendMessage("${command.params[0]} is not a valid security level!").queue()
                 }
+            }
+            "shutdown" -> {
+                shutdown()
             }
         }
     }
